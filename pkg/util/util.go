@@ -17,6 +17,7 @@ limitations under the License.
 package util
 
 import (
+	"bufio"
 	"context"
 	"crypto/sha256"
 	"fmt"
@@ -31,14 +32,13 @@ import (
 	"strings"
 	"syscall"
 	"time"
-	"bufio"
 
 	"github.com/prometheus/client_golang/prometheus"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/klog"
-	"k8s.io/utils/io"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/klog"
+	"k8s.io/utils/io"
 
 	"github.com/juicedata/juicefs-csi-driver/pkg/config"
 )
@@ -309,7 +309,7 @@ func ShouldWait4WriteBack(pod *corev1.Pod) (e error) {
 	}
 
 	statPath := sourcePath
-	if (strings.HasSuffix(statPath, "/")) {
+	if strings.HasSuffix(statPath, "/") {
 		statPath = statPath + ".stats"
 	} else {
 		statPath = statPath + "/.stats"
@@ -318,7 +318,7 @@ func ShouldWait4WriteBack(pod *corev1.Pod) (e error) {
 	file, err := os.Open(statPath)
 	if err != nil {
 		klog.Errorf("--- fail to open stat file: %s", statPath)
-		return nil  // go thru
+		return nil // go thru
 	}
 	defer file.Close()
 
@@ -329,11 +329,11 @@ func ShouldWait4WriteBack(pod *corev1.Pod) (e error) {
 			fields := strings.Fields(line)
 			if len(fields) <= 1 {
 				klog.Errorf("--- error format: %s", line)
-				return nil  // go thru
+				return nil // go thru
 			}
 			klog.Infof("----- juicefs_staging_blocks: %s", fields[1])
 			if fields[1] == "0" {
-				return nil  // go thru
+				return nil // go thru
 			}
 			return errors.NewConflict(
 				schema.GroupResource{Group: "", Resource: ""}, "",
@@ -344,7 +344,7 @@ func ShouldWait4WriteBack(pod *corev1.Pod) (e error) {
 	if err := scanner.Err(); err != nil {
 		klog.Errorf("--- %s scanner err: %v", statPath, err)
 	}
-	return nil  // go thru
+	return nil // go thru
 }
 
 func QuoteForShell(cmd string) string {
