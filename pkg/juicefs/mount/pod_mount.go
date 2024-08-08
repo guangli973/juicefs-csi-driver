@@ -185,13 +185,13 @@ func (p *PodMount) UmountTarget(ctx context.Context, target, podName string) err
 }
 
 func (p *PodMount) JUmount(ctx context.Context, target, podName string) error {
-    var UmountBackoff = wait.Backoff{
-        Steps:    4,
-        Duration: 5 * time.Second,
-        Factor:   4.0,
-        Jitter:   0.1,
-        Cap:      10 * time.Minute,
-    }
+	var UmountBackoff = wait.Backoff{
+		Steps:	4,
+		Duration: 5 * time.Second,
+		Factor:   4.0,
+		Jitter:   0.1,
+		Cap:	  10 * time.Minute,
+	}
 	err := retry.RetryOnConflict(UmountBackoff, func() error {
 		po, err := p.K8sClient.GetPod(ctx, podName, jfsConfig.Namespace)
 		if err != nil {
@@ -207,7 +207,7 @@ func (p *PodMount) JUmount(ctx context.Context, target, podName string) error {
 			return nil
 		}
 
-        err = util.ShouldWait4WriteBack(po)
+		err = util.ShouldWait4WriteBack(po)
 		if err != nil {
 			return err // a couple of retries
 		}
